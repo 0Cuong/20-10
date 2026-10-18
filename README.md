@@ -2,6 +2,10 @@
 
 Một dự án web tĩnh để tự thiết kế thiệp 20/10 bằng lời nhắn, ảnh, màu giấy và sticker. Giao diện tiếng Việt; có hiệu ứng mở phong bì, nhạc nền, chế độ giảm chuyển động và khả năng chia sẻ thiệp.
 
+**Bản demo:** [Mở thiệp 20/10](https://20-10-open-source.vercel.app/20_10) · [Trang chủ](https://20-10-open-source.vercel.app)
+
+[![CI](https://github.com/0Cuong/20-10/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/0Cuong/20-10/actions/workflows/ci.yml)
+
 ## Tính năng
 
 - Tùy chỉnh tên người nhận/người gửi, lời chúc, tiêu đề, câu kết và lời nhắn cuối.
