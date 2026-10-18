@@ -25,3 +25,5 @@ jobs:
         run: npm test
       - name: Build static site
         run: npm run build
+      - name: Verify stable photo asset path
+        run: test -f dist/photo_pink.webp
