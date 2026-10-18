@@ -1,56 +1,59 @@
-# 20/10 — Dành tặng các chị em
+# 20/10 — Trình tạo thiệp chúc mừng
 
-Một món quà nhỏ nhân ngày Phụ nữ Việt Nam 20/10 💐  
-Tạo thiệp chúc mừng, lưu lại và chia sẻ lời chúc đến những người phụ nữ tuyệt vời quanh bạn.
+Một dự án web tĩnh để tự thiết kế thiệp 20/10 bằng lời nhắn, ảnh, màu giấy và sticker. Giao diện tiếng Việt; có hiệu ứng mở phong bì, nhạc nền, chế độ giảm chuyển động và khả năng chia sẻ thiệp.
 
-**Made by [0Cuong](https://www.facebook.com/0Cuongisme)**
+## Tính năng
 
----
+- Tùy chỉnh tên người nhận/người gửi, lời chúc, tiêu đề, câu kết và lời nhắn cuối.
+- Chọn ảnh, màu giấy, thêm/kéo/xoay/đổi kích thước sticker.
+- Tự lưu bản nháp trong trình duyệt; chia sẻ bằng đường dẫn hoặc mã QR mà không cần máy chủ.
+- Tùy chọn lưu bản nháp và xuất bản thiệp trực tuyến bằng Supabase.
+- Chạy và build bằng Vite; không cần framework frontend.
 
-## Chạy dự án trên máy tính
+> **Quyền riêng tư:** link chia sẻ cục bộ chứa nội dung thiệp đã nén/encode trong URL, không được mã hóa. Bất kỳ ai có link đều có thể đọc nội dung. Chỉ đưa vào thiệp những thông tin bạn sẵn sàng chia sẻ.
 
-Bạn cần cài [Node.js](https://nodejs.org/) trước.
+## Yêu cầu và chạy trên máy
 
-Mở Terminal hoặc PowerShell tại thư mục dự án, sau đó chạy:
+Cần Node.js **20.19+** và npm.
 
 ```bash
 npm install
-npm run start
+npm run dev
 ```
 
-Mở địa chỉ được hiển thị trong cửa sổ lệnh (mặc định là http://localhost:3000).
+Mở địa chỉ Vite hiển thị trong terminal (mặc định `http://127.0.0.1:3000`).
 
-Để tạo bản build dùng khi đăng website:
+```bash
+npm test       # chạy kiểm thử API
+npm run build  # tạo website tĩnh trong dist/
+npm run check  # chạy test và build
+npm run preview
+```
+
+## Lưu/xuất bản trực tuyến (tùy chọn)
+
+Chế độ cục bộ và link/QR hoạt động mà không cần Supabase. Chỉ thiết lập phần này nếu bạn muốn lưu thiệp trên máy chủ và chia sẻ đường dẫn ngắn.
+
+1. Tạo một dự án Supabase.
+2. Sao chép `.env.example` thành `.env`, rồi điền URL và publishable key (hoặc anon key công khai):
+   ```dotenv
+   VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+   VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLIC_PUBLISHABLE_OR_ANON_KEY
+   ```
+   Có thể dùng `VITE_SUPABASE_ANON_KEY` làm tên biến thay thế.
+3. Mở SQL Editor của **đúng dự án Supabase** và chạy migration `20261018000000_cards.sql` một lần.
+4. Khởi động lại `npm run dev` hoặc build lại sau khi đổi biến môi trường.
+
+**Không đưa service-role key vào frontend hoặc GitHub.** Publishable/anon key được dùng ở client; không thay thế kiểm soát quyền ở database. Migration trong repo chưa được xác minh trên một dự án Supabase thực tế; hãy thử trên dự án mới trước khi dùng dữ liệu quan trọng. Không có tài khoản khôi phục: xóa dữ liệu trình duyệt có thể làm mất token chỉnh sửa của bản nháp.
+
+## Build và triển khai
 
 ```bash
 npm run build
 ```
 
-Bản build sẽ nằm trong thư mục `dist`.
+Đưa **toàn bộ nội dung** trong `dist/` lên hosting tĩnh. Vite dùng `base: './'` để phù hợp với root domain và các đường dẫn dạng GitHub Pages. Nếu hosting không hỗ trợ URL sạch, mở `/20_10.html`; hosting có URL sạch có thể phục vụ `/20_10`.
 
-## Lưu và chia sẻ thiệp
+## Đóng góp và giấy phép
 
-- Thiệp có thể được lưu trên trình duyệt của bạn.
-- Bạn có thể chia sẻ thiệp bằng đường link hoặc mã QR, tùy chức năng trên trang.
-- Các chức năng lưu bản nháp và xuất bản trực tuyến cần kết nối Supabase.
-
-## Cấu hình lưu thiệp trực tuyến (tùy chọn)
-
-Nếu chỉ muốn chạy thử giao diện, bạn có thể bắt đầu bằng phần **Chạy dự án trên máy tính**.
-
-Để bật lưu và xuất bản thiệp trực tuyến:
-
-1. Tạo một dự án trên [Supabase](https://supabase.com/).
-2. Sao chép file `.env.example` thành `.env`.
-3. Điền địa chỉ dự án và **publishable key** (hoặc anon key công khai) vào các biến được hướng dẫn trong file mẫu.
-4. Áp dụng migration của dự án lên Supabase trước khi dùng chức năng lưu/xuất bản trực tuyến.
-
-**Lưu ý:** Không đăng tải file `.env` chứa thông tin cấu hình riêng tư. Tuyệt đối không đưa `service_role` key vào mã nguồn frontend hoặc GitHub.
-
-## Đăng website
-
-Bạn có thể triển khai bản build trên một dịch vụ hosting tĩnh như GitHub Pages, Netlify hoặc Vercel. Hãy kiểm tra cấu hình đường dẫn và các biến môi trường của dịch vụ trước khi đăng.
-
----
-
-*Chúc các chị em có một ngày 20/10 thật vui vẻ, luôn xinh đẹp, hạnh phúc và được yêu thương!*
+Đọc [CONTRIBUTING.md](CONTRIBUTING.md) trước khi gửi issue hoặc pull request. Mã nguồn, test, cấu hình và tài liệu theo MIT ([LICENSE](LICENSE)). **Các tệp ảnh, sticker, video và nhạc có phạm vi quyền riêng**; xem [ASSET-LICENSES.md](ASSET-LICENSES.md) trước khi tái sử dụng media.

@@ -31,3 +31,22 @@ test('state round-trip', () => {
   const S = { to: 'Lan', from: 'Cường', msg: 'Chúc mừng', skin: 'sage', title: 't', close: 'c', ps: '', fin: 'f', ph: { pink: [1, 'x'] }, st: [] };
   assert.deepEqual(api.fromServer(api.toServer(S)), S);
 });
+
+test('owner operations reject malformed ids and tokens before network calls', async () => {
+  globalThis.CARD_CONFIG = cfg; let hit = false;
+  globalThis.fetch = async () => { hit = true; return reply(200, { ok: true })(); };
+  assert.equal(await api.getCardForEdit('../bad', 'not-a-token'), null);
+  await assert.rejects(api.updateCard('abcdefghijk', 'short', {}), { code: 'forbidden' });
+  await assert.rejects(api.deleteCard('wrong', 't'.repeat(32)), { code: 'forbidden' });
+  await assert.rejects(api.setStatus('abcdefghijk', 't'.repeat(32), 'admin'), { code: 'invalid_card' });
+  assert.equal(hit, false);
+});
+test('token storage reports blocked storage and filters invalid tokens', () => {
+  globalThis.localStorage = {
+    setItem() { throw new Error('blocked'); },
+    getItem() { return 'bad token'; }
+  };
+  assert.equal(api.keepToken('abcdefghijk', 't'.repeat(32)), false);
+  assert.equal(api.recallToken('abcdefghijk'), null);
+  delete globalThis.localStorage;
+});

@@ -12,7 +12,7 @@ if (supabaseUrl && anonKey) globalThis.CARD_CONFIG = { supabaseUrl, anonKey };
 const app = globalThis.CARD_APP;
 const editor = document.querySelector('#ed');
 const statusLine = document.querySelector('#route-status');
-const state = { shareId: null, token: null, status: 'draft', busy: false };
+const state = { shareId: null, token: null, status: 'draft', busy: false, tokenStored: true };
 
 const tools = document.createElement('section');
 tools.id = 'cloud-tools';
@@ -72,7 +72,7 @@ async function saveDraft() {
     state.shareId = created.shareId;
     state.token = created.editToken;
     state.status = 'draft';
-    keepToken(state.shareId, state.token);
+    state.tokenStored = keepToken(state.shareId, state.token);
     history.replaceState(null, '', `${location.pathname}${location.search}#/card/${state.shareId}`);
   } else {
     await updateCard(state.shareId, state.token, app.getState());
@@ -95,6 +95,7 @@ async function loadCloudRoute() {
     if (!card) throw new Error('Không tìm thấy thiệp đã xuất bản hoặc thiệp đã hết hạn.');
     state.shareId = shareId;
     state.token = token;
+    state.tokenStored = !!token;
     state.status = card.status || 'published';
     app.setState(card);
     app.setRecipient(!token);
@@ -112,7 +113,7 @@ $('#cloud-save').addEventListener('click', async () => {
     if (state.status !== 'draft') await setStatus(state.shareId, state.token, 'draft');
     state.status = 'draft';
     updateLink(url, 'Link thiệp nháp (chỉ bạn mở được)');
-    cloudMsg('Đã lưu bản nháp. Quyền chỉnh sửa được giữ trên trình duyệt này.');
+    cloudMsg(state.tokenStored ? 'Đã lưu bản nháp. Quyền chỉnh sửa được giữ trên trình duyệt này.' : 'Đã lưu bản nháp, nhưng trình duyệt không cho lưu token chỉnh sửa. Đừng tải lại trang hoặc xóa dữ liệu trang; bạn có thể mất quyền sửa thiệp này.');
   } catch (error) { cloudMsg(error.message || 'Lưu thiệp chưa thành công.'); }
   finally { setBusy(false); }
 });
@@ -125,7 +126,7 @@ $('#cloud-publish').addEventListener('click', async () => {
     state.status = 'published';
     const url = shareUrl(state.shareId, location.href.split('#')[0]);
     updateLink(url, 'Link thiệp đã xuất bản');
-    cloudMsg('Thiệp đã được xuất bản. Bạn có thể chia sẻ link hoặc tạo mã QR.');
+    cloudMsg(state.tokenStored ? 'Thiệp đã được xuất bản. Bạn có thể chia sẻ link hoặc tạo mã QR.' : 'Thiệp đã xuất bản, nhưng trình duyệt không lưu được token chỉnh sửa. Hãy giữ phiên này; nếu đóng trang bạn có thể mất quyền sửa thiệp.');
   } catch (error) { cloudMsg(error.message || 'Xuất bản chưa thành công.'); }
   finally { setBusy(false); }
 });
@@ -167,6 +168,5 @@ if (!globalThis.CARD_CONFIG) {
   $('#cloud-save').disabled = true;
   $('#cloud-publish').disabled = true;
   $('#cloud-msg').textContent = 'Chưa cấu hình Supabase; chia sẻ link và QR cục bộ vẫn dùng được.';
-} else {
-  loadCloudRoute();
 }
+loadCloudRoute();

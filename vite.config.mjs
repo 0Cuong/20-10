@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 const here = (path) => fileURLToPath(new URL(path, import.meta.url));
 
 export default defineConfig({
+  base: './',
   build: {
     rollupOptions: {
       input: {
