@@ -39,9 +39,9 @@ const requireOwner = (id, token) => { if (!SHARE_ID.test(id) || !validToken(toke
 export async function createCard(S) { const r = await rpc('create_card', { p_card: toServer(S) }); return { shareId: r.share_id, editToken: r.edit_token }; }
 export async function getCard(shareId) { if (typeof shareId !== 'string' || !SHARE_ID.test(shareId)) return null; const r = await rpc('get_card', { p_share_id: shareId }); return r && fromServer(r); }
 export async function getCardForEdit(id, tok) { if (typeof id !== 'string' || !SHARE_ID.test(id) || !validToken(tok)) return null; return fromServer(await rpc('get_card_for_edit', { p_share_id: id, p_token: tok })); }
-export const updateCard = (id, tok, S) => { requireOwner(id, tok); return rpc('update_card', { p_share_id: id, p_token: tok, p_card: toServer(S) }); };
-export const setStatus = (id, tok, status) => { requireOwner(id, tok); if (!['draft', 'published'].includes(status)) throw fail('invalid_card'); return rpc('set_card_status', { p_share_id: id, p_token: tok, p_status: status }); };
-export const deleteCard = (id, tok) => { requireOwner(id, tok); return rpc('delete_card', { p_share_id: id, p_token: tok }); };
+export const updateCard = async (id, tok, S) => { requireOwner(id, tok); return rpc('update_card', { p_share_id: id, p_token: tok, p_card: toServer(S) }); };
+export const setStatus = async (id, tok, status) => { requireOwner(id, tok); if (!['draft', 'published'].includes(status)) throw fail('invalid_card'); return rpc('set_card_status', { p_share_id: id, p_token: tok, p_status: status }); };
+export const deleteCard = async (id, tok) => { requireOwner(id, tok); return rpc('delete_card', { p_share_id: id, p_token: tok }); };
 
 // Route dạng hash để F5/mở trực tiếp luôn chạy trên hosting tĩnh (GitHub Pages): trang#/card/<share_id>
 export const shareUrl = (id, base = location.href.split('#')[0]) => `${base}#/card/${id}`;
